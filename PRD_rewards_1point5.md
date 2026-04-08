@@ -144,6 +144,10 @@ Every user on the Rewards page falls into one of the following segments. Each se
 
 ## 4. Rewards Page — Full Page Anatomy
 
+The diagram below shows the complete Rewards page layout after v1.5, with every surface annotated:
+
+![Rewards Page — Full Anatomy (Annotated)](./assets/10_page_anatomy_annotated.png)
+
 Top-to-bottom layout of the Rewards page after v1.5:
 
 ```
@@ -184,6 +188,32 @@ Top-to-bottom layout of the Rewards page after v1.5:
 └──────────────────────────────────────┘
 ```
 
+### 4.1 Visual reference: Key page states side by side
+
+The following shows 4 key page configurations that a user can see, from a brand-new user with zero cashback all the way to an engaged user with full carousel:
+
+![Rewards Page — Key States](./assets/01_rewards_page_key_states.png)
+
+**State A (₹0 Balance):** New user, no cashback yet. Greyed CTA reads "Min ₹0.5 to redeem". No cashback history. No carousel (fresh user = S1, only Referral tile qualifies → < 2 tile minimum).
+
+**State B (Sub-₹10, Active, No Card):** User has earned some cashback (₹4.80 redeemable). Green CTA is active. Card nudge shows "Get extra cashback of ₹6,000". No carousel (S1 — no products owned yet). Cashback history visible.
+
+**State C (≥₹10, Active, Card Holder):** User with ₹50 lifetime cashback, ₹4.80 redeemable. Card nudge shows "superCard cashbacks" (user has card). "On the way" row visible at ₹0. No carousel shown here because user hasn't bought Gold/GV yet (S3 with no product history → only Referral qualifies).
+
+**State D (Active, Engaged, With Carousel):** User with ₹50 lifetime cashback who has bought Gold (₹5,018 value) and Gift Cards (2 active). Carousel renders with Gold tile, Gift Cards tile, and Referral tile. This is the "full" Rewards page experience.
+
+### 4.2 Visual reference: Responsive and scroll states
+
+The page adapts to scrolling and device size. The cashback widget collapses on scroll to keep the CTA and carousel visible:
+
+![Responsive States: On-Scroll, On-the-Way, Smaller Device](./assets/04_responsive_scroll_states.png)
+
+**On Scroll (left):** When the user scrolls down, the widget collapses — "Lifetime cashback" and "Redeemed" rows are hidden. Only "On the way", "Redeemable", and the green CTA remain visible. This keeps the primary action accessible while the user browses cashback history. Notice the cashback history also shows failed redemption entries with red "Failed" label.
+
+**On the Way (center):** User has ₹50 lifetime but ₹0 redeemable (all cashback either redeemed or still settling). The CTA is greyed: "Min ₹0.5 to redeem". The "On the way" row shows ₹0. Carousel still renders (user owns Gold + GV). This state demonstrates that the carousel is independent of redeemable balance — it's purely based on product ownership.
+
+**Smaller Device (right):** Same data as the center screen but rendered on a smaller viewport. The layout is identical but compressed. All elements remain functional. The carousel tiles are narrower but still scrollable.
+
 ---
 
 ## 5. Surface 1: Cashback Balance Widget
@@ -206,6 +236,8 @@ The widget is a blue/purple gradient card showing:
 
 The CTA button sits below the widget rows, inside the widget card.
 
+![CTA Button States — Complete Reference](./assets/05_cta_state_reference.png)
+
 | Redeemable balance | CTA state | CTA copy | Background |
 |-------------------|-----------|----------|------------|
 | ₹0.00 | Greyed / disabled | *"at least ₹0.01 cashback needed to redeem"* | Light grey |
@@ -213,9 +245,23 @@ The CTA button sits below the widget rows, inside the widget card.
 
 **CTA must always display the exact redeemable amount** (e.g. "Redeem cashback ₹4.80"), not a generic "Redeem cashback". The amount serves as an anchor and pull mechanic.
 
+**Key rules for the CTA (also shown in the diagram above):**
+- **₹0 state:** Greyed CTA, bottomsheet never opens. User sees the nudge copy "at least ₹0.01 cashback needed to redeem."
+- **Sub-₹10 (₹0.01–₹9.99):** CTA is active green, but bank row inside the bottomsheet shows "Not eligible" — this is the forced funnel that routes users to GV or Gold.
+- **≥₹10:** CTA is active green and all three bottomsheet options are available (for active users). For expired users, bank is still "Not eligible" regardless of balance.
+
 ### 5.3 Swipe variant (expired users)
 
 For superBenefits expired users, the CTA may render as "Swipe to redeem" instead of a tap button. This is the existing expired-user behaviour being preserved in v1.5.
+
+### 5.4 On-scroll collapse behaviour
+
+When the user scrolls down the page, the cashback balance widget collapses:
+- **Hidden on scroll:** "Lifetime cashback" hero number, "Redeemed" row
+- **Remains visible:** "On the way" row (if > ₹0), "Redeemable" row, and the green CTA button
+- **Purpose:** Keeps the primary action (Redeem CTA) always accessible while the user browses cashback history or carousel tiles below
+
+See the "On Scroll" panel in the responsive states diagram (§4.2) for the visual reference.
 
 ---
 
@@ -226,6 +272,8 @@ For superBenefits expired users, the CTA may render as "Swipe to redeem" instead
 Directly below the cashback balance widget. Always visible to all users regardless of superBenefits status.
 
 ### 6.2 States
+
+![Card Nudge — Two States](./assets/06_card_nudge_states.png)
 
 | User's card status | Nudge copy | Icon | Tap destination |
 |-------------------|-----------|------|----------------|
@@ -265,6 +313,22 @@ A horizontally scrollable row of tiles positioned between the card nudge and cas
 
 **Since Referral is always shown, the carousel renders as soon as any one of Gold/GV/Scratch Cards qualifies.**
 
+### 7.2.1 Visual reference: Tile combinations
+
+The following diagram shows every possible tile combination across user segments, including the "hidden" state when fewer than 2 tiles qualify:
+
+![Discovery Carousel — Tile Visibility & Combinations](./assets/03_carousel_tile_combinations.png)
+
+**Row 1 — Fresh user (S1/S4):** Only Referral qualifies. Since < 2 tiles meet the threshold, the entire carousel row is hidden. These users don't see the carousel at all.
+
+**Row 2 — Gold + GV owner:** Three tiles render (Gold, Gift Cards, Referral). Horizontal scroll available.
+
+**Row 3 — Gold + GV + Scratch:** All four tiles render. This is the maximum carousel width. The Referral tile peeks from the right edge to signal scrollability.
+
+**Row 4 — Gold only:** The minimum carousel configuration. Two tiles: Gold + Referral.
+
+**Row 5 — GV + Scratch:** Three tiles. Note Gold tile is absent because user never purchased gold.
+
 ### 7.3 Tile: Gold
 
 | Property | Detail |
@@ -298,6 +362,8 @@ This is the **highest priority tile** in the v1.5 release.
 | **Display** | Contextual — depends on what the user has. See §7.5.1–7.5.5 below. |
 | **Tap** | Opens games/coupons inner page within Rewards |
 | **Badge** | "NEW" badge on first appearance. Cleared after first tap into inner page. |
+
+> **Note:** Scratch card tile designs are still in progress in Figma. The specifications below are based on the agreed behaviour; visual designs will be updated when available.
 
 ---
 
@@ -406,6 +472,14 @@ Tapping the active (green) "Redeem cashback ₹X.XX" CTA on the Rewards page ope
 
 The bottomsheet is NOT one-size-fits-all. There are **two fully separate designs** based on user tier.
 
+The diagram below shows all three bottomsheet configurations side by side — Variant A at sub-₹10, Variant A at ≥₹10, and Variant B (expired users):
+
+![Redemption Bottomsheet — Variant A vs Variant B](./assets/02_bottomsheet_variants.png)
+
+**Key differences at a glance:**
+- **Variant A (left two):** 3 options — Gold (pre-selected, default), Gift Cards, Bank. Active users see extra cashback rates inline ("Earn 1% cashback" for Gold, "Earn 20% cashback" for GV). Bank row state depends on balance.
+- **Variant B (right):** 3 options — Gold (pre-selected, default), Gift Card, Bank ("Not eligible"). Gold is available from day 1 to all users regardless of superBenefits status — expired users are never blocked from Gold. No extra cashback copy shown for expired users. Bank row is tappable and expands a card nudge ("Get access with superCard → Apply for card"). CTA reads "Swipe to redeem" instead of "Confirm".
+
 ---
 
 ### 8.3 Variant A — superBenefits active user
@@ -431,20 +505,25 @@ The bottomsheet is NOT one-size-fits-all. There are **two fully separate designs
 | ≥ ₹10 | No pill | Yes (selectable as redemption option) | None |
 | ₹0.01 – ₹9.99 | "Not eligible" (grey pill) | **No** (non-tappable dead state) | Tooltip shown inline: *"You need a minimum balance of ₹10 to transfer."* |
 
+As shown in the leftmost panel of the bottomsheet diagram (§8.2), when balance is sub-₹10, the bank row displays the "Not eligible" pill and an inline tooltip explaining the ₹10 minimum. The row is completely non-interactive — the user cannot select it. This is the core "forced funnel" mechanic: the user must choose Gold or Gift Cards.
+
+In the center panel, when balance is ≥₹10, the bank row becomes a normal selectable radio option with no pill.
+
 ---
 
 ### 8.4 Variant B — superBenefits expired user
 
 **Header:** "Choose to redeem in"
 
+> **Policy:** Gold is available to ALL users from day 1 — expired superBenefits users are never blocked from buying Gold. Gold access is permanent and unconditional, regardless of superBenefits status. Expired users do not earn extra cashback on Gold (same as GV), but they can buy Gold freely.
+
 **Options (top to bottom):**
 
 | # | Option | Icon | Sub-label | Selection state | Tappable? |
 |---|--------|------|-----------|----------------|-----------|
-| 1 | **Gift card** | Gift box icon | "100+ brands" | **Pre-selected by default** (green checkmark) | Yes |
-| 2 | **Bank account** [Bank name XX##] | Bank building icon + bank logo | See §8.4.1 below | See §8.4.1 below | **Yes** (tappable, but not selectable) |
-
-**Gold is NOT shown** in this variant. Expired user Gold redemption is deferred.
+| 1 | **24K Digital Gold** | Gold coin icon | *(no extra cashback sub-label for expired users)* | **Pre-selected by default** (green checkmark) | Yes |
+| 2 | **Gift card** | Gift box icon | "100+ brands" | Unselected (empty circle) | Yes |
+| 3 | **Bank account** [Bank name XX##] | Bank building icon + bank logo | See §8.4.1 below | See §8.4.1 below | **Yes** (tappable, but not selectable) |
 
 **CTA button:** "Swipe to redeem" (green, full-width, swipe gesture)
 
@@ -457,6 +536,8 @@ For expired users, bank is ALWAYS "Not eligible" regardless of balance. But the 
 | Balance | Pill | Tappable? | On tap behaviour |
 |---------|------|-----------|-----------------|
 | Any (₹0.01+) | "Not eligible" (grey pill) | **Yes** | Expands an inline card nudge below the bank row: *"Get access to this feature with superCard"* + **"Apply for card"** deep link (blue, underlined). Tapping "Apply for card" navigates to card page. |
+
+As shown in the rightmost panel of the bottomsheet diagram (§8.2), when an expired user taps the bank row, it expands to reveal the card nudge inline. This is a critical conversion path: it educates expired users that getting a superCard unlocks bank redemption.
 
 ---
 
@@ -471,6 +552,8 @@ For expired users, bank is ALWAYS "Not eligible" regardless of balance. But the 
 #### 8.5.1 Gold minimum purchase formula
 
 The minimum gold purchase value is dynamically calculated to ensure super.money recoups its 3% take rate from the transaction:
+
+![Gold Minimum Purchase Formula — Worked Examples](./assets/08_gold_formula_examples.png)
 
 ```
 min_gold_purchase = max(redeemable_cashback / 0.03, ₹10)
@@ -516,6 +599,17 @@ This is the definitive reference for what every user sees across all 4 surfaces,
 
 ### 10.1 Matrix: Segment × Balance → All surfaces
 
+The visual matrix below maps all 18 combinations (6 segments × 3 balance states) to the exact experience across every surface:
+
+![Master State Matrix — Segment × Balance → Experience](./assets/07_master_state_matrix.png)
+
+**How to read the matrix:**
+- **Rows** are grouped by segment (S1–S6), with three balance sub-rows each (₹0, ₹0.01–₹9.99, ≥₹10).
+- **Columns** show the state of each surface: CTA, Bottomsheet variant, Card nudge copy, Carousel visibility, and Header variant.
+- **Color coding:** Purple text = Variant A (active users), Orange/red text = Variant B (expired users), Green text = active CTA, Grey text = greyed/hidden.
+
+The full data table for reference:
+
 | Segment | Balance | Redeem CTA | Bottomsheet | Card nudge | Carousel | Header |
 |---------|---------|-----------|-------------|------------|----------|--------|
 | S1 (active, fresh) | ₹0 | Greyed: "at least ₹0.01…" | Not triggered | "₹6,000 cashback" | Hidden (< 2 tiles) | Standard |
@@ -528,14 +622,14 @@ This is the definitive reference for what every user sees across all 4 surfaces,
 | S3 (active, card holder) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant A: Gold (default), GV, Bank (not eligible, non-tappable) | "superCard cashbacks" | Depends on products | Standard |
 | S3 (active, card holder) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant A: Gold (default), GV, Bank (selectable) | "superCard cashbacks" | Depends on products | Standard |
 | S4 (expired, fresh) | ₹0 | Greyed: "at least ₹0.01…" | Not triggered | "₹6,000 cashback" | Hidden (< 2 tiles) | + "View gift card" |
-| S4 (expired, fresh) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant B: GV (default), Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Hidden (< 2 tiles) | + "View gift card" |
-| S4 (expired, fresh) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant B: GV (default), Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Hidden (< 2 tiles) | + "View gift card" |
+| S4 (expired, fresh) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant B: Gold (default), GV, Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Hidden (< 2 tiles) | + "View gift card" |
+| S4 (expired, fresh) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant B: Gold (default), GV, Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Hidden (< 2 tiles) | + "View gift card" |
 | S5 (expired, engaged) | ₹0 | Greyed: "at least ₹0.01…" | Not triggered | "₹6,000 cashback" | Shown if ≥ 2 tiles | + "View gift card" |
-| S5 (expired, engaged) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant B: GV (default), Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Shown if ≥ 2 tiles | + "View gift card" |
-| S5 (expired, engaged) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant B: GV (default), Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Shown if ≥ 2 tiles | + "View gift card" |
+| S5 (expired, engaged) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant B: Gold (default), GV, Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Shown if ≥ 2 tiles | + "View gift card" |
+| S5 (expired, engaged) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant B: Gold (default), GV, Bank (not eligible, tappable → card nudge) | "₹6,000 cashback" | Shown if ≥ 2 tiles | + "View gift card" |
 | S6 (expired, card holder) | ₹0 | Greyed: "at least ₹0.01…" | Not triggered | "superCard cashbacks" | Depends | + "View gift card" |
-| S6 (expired, card holder) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant B: GV (default), Bank (not eligible, tappable → card nudge) | "superCard cashbacks" | Depends | + "View gift card" |
-| S6 (expired, card holder) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant B: GV (default), Bank (not eligible, tappable → card nudge) | "superCard cashbacks" | Depends | + "View gift card" |
+| S6 (expired, card holder) | ₹0.01–₹9.99 | Green: "Redeem ₹X.XX" | Variant B: Gold (default), GV, Bank (not eligible, tappable → card nudge) | "superCard cashbacks" | Depends | + "View gift card" |
+| S6 (expired, card holder) | ≥ ₹10 | Green: "Redeem ₹X.XX" | Variant B: Gold (default), GV, Bank (not eligible, tappable → card nudge) | "superCard cashbacks" | Depends | + "View gift card" |
 
 ### 10.2 Matrix: Carousel tile visibility
 
@@ -590,10 +684,20 @@ States #12 and #13 are transition states — they occur when one category has fu
 
 The single most important business outcome of this release:
 
+![The Forced Funnel — Sub-₹10 User Journey](./assets/09_forced_funnel_flow.png)
+
 - **~30–40% of redemption-eligible users** have < ₹10 redeemable balance.
 - **Before v1.5:** These users see a locked Redeem CTA. Zero engagement. Zero redemption.
 - **After v1.5:** These users tap an active CTA, enter the bottomsheet, see Bank as "Not eligible", and are structurally forced to choose GV or Gold.
 - **Financial impact:** Incremental GV/Gold redemption volume at zero additional reward cost. The cashback was already earned — the only question was whether it gets redeemed (and where). Now it does, and it goes to a cheaper path.
+
+**Flow breakdown (as shown in the diagram):**
+
+1. User lands on Rewards page with ₹0.01–₹9.99 balance.
+2. Sees active green CTA ("Redeem cashback ₹X.XX") — this is new; previously the CTA was locked below ₹10.
+3. Taps CTA → Bottomsheet opens.
+4. **Active user (Variant A):** Sees Gold (selectable), GV (selectable), Bank (NOT eligible — non-tappable dead state with tooltip: "Min ₹10 to transfer"). Structurally forced to Gold or GV.
+5. **Expired user (Variant B):** Sees GV (only selectable option), Bank (NOT eligible — tappable, expands card nudge: "Apply for card →"). Structurally forced to GV.
 
 ### 11.3 Gold unit economics (illustrative, pending commission rate)
 
@@ -681,3 +785,22 @@ This section will be populated once Safegold commercials close.
 | **Forced funnel** | The structural routing of sub-₹10 users away from bank redemption (disabled) toward GV or Gold (enabled). |
 | **Take rate** | super.money's 3% margin on gold purchases, recouped from the transaction. Determines minimum gold purchase value. |
 | **Card allocator** | Rule engine that determines whether a user is routed to a secured card (Utkarsh) or unsecured card (Axis) during the card application flow. |
+
+---
+
+## 17. Appendix: Visual Asset Index
+
+All diagrams are stored in `./assets/` relative to this PRD file. Each image is referenced inline at the relevant section.
+
+| # | File | Section | What it shows |
+|---|------|---------|---------------|
+| 1 | `01_rewards_page_key_states.png` | §4.1 | 4 key page configurations: ₹0 balance, sub-₹10, ≥₹10 card holder, full carousel |
+| 2 | `02_bottomsheet_variants.png` | §8.2 | Variant A (sub-₹10), Variant A (≥₹10), Variant B (expired) side by side |
+| 3 | `03_carousel_tile_combinations.png` | §7.2.1 | 5 tile combinations from "hidden" to full 4-tile scroll |
+| 4 | `04_responsive_scroll_states.png` | §4.2 | On-scroll collapse, on-the-way state, smaller device |
+| 5 | `05_cta_state_reference.png` | §5.2 | CTA button in all 3 balance states with rules |
+| 6 | `06_card_nudge_states.png` | §6.2 | Card nudge: no card vs card holder |
+| 7 | `07_master_state_matrix.png` | §10.1 | 18-row matrix of all segment × balance combinations |
+| 8 | `08_gold_formula_examples.png` | §8.5.1 | Gold min purchase formula with 5 worked examples |
+| 9 | `09_forced_funnel_flow.png` | §11.2 | Sub-₹10 user journey flowchart showing forced routing |
+| 10 | `10_page_anatomy_annotated.png` | §4 | Full page with surface annotations pointing to each section |
