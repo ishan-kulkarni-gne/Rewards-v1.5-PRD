@@ -5,6 +5,8 @@
 **Target launch:** May 1, 2026 (force-routing activation)
 **Priority order:** Scratch Cards tile (P0) → Gold redemption (P1) → Threshold change + carousel (P1)
 
+**Figma:** https://www.figma.com/design/2g7PWs2eBFxCESqogFaJFC/Rewards?node-id=439-21917&t=p1sibozB1UqlQlnQ-4
+
 ---
 
 ## Table of Contents
